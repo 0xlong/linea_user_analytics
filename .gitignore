@@ -4,7 +4,7 @@
 .env.*
 
 # Virtual environment
-linea_user_analytics/
+linea_user_analytics_env/
 .venv/
 venv/
 env/
@@ -26,6 +26,7 @@ data/raw/*.csv
 data/raw/*.json
 data/processed/*.csv
 data/processed/*.json
+project_context/
 
 # dbt
 dbt_project/target/
@@ -49,3 +50,5 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+linea_user_analytics_env/

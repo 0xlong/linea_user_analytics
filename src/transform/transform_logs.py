@@ -162,7 +162,7 @@ if __name__ == "__main__":
     df_parsed = parse_logs(df_raw)
     
     # Save processed
-    output_file = f"{PROCESSED_DATA_DIR}/bridge_logs_parsed.csv"
+    output_file = f"{PROCESSED_DATA_DIR}/processed_logs.csv"
     save_processed(df_parsed, output_file)
     
     # Show sample
