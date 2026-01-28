@@ -1,0 +1,10 @@
+# Environment & Config
+python-dotenv==1.0.0
+
+# Web3 & Blockchain
+web3==6.15.1
+requests==2.31.0
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.3
