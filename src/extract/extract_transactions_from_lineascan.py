@@ -18,12 +18,14 @@ from utils.config import (
     LINEASCAN_API_KEY,
     LINEASCAN_URL,
     LINEA_CHAIN_ID,
-    LINEA_START_BLOCK,
-    LINEA_END_BLOCK,
+    ETHERSCAN_API_KEY,
+    EXTRACTION_START_DATE,
+    EXTRACTION_END_DATE,
     PROCESSED_DATA_DIR,
     RAW_DATA_DIR,
     REQUEST_DELAY
 )
+from utils.block_utils import get_linea_block_by_date
 
 
 # =============================================================================
@@ -37,7 +39,7 @@ session = requests.Session()
 # FUNCTIONS
 # =============================================================================
 
-def load_unique_wallets(processed_logs_path, start_date="2025-07-31"):
+def load_unique_wallets(processed_logs_path, start_date=EXTRACTION_START_DATE):
     """Load unique wallet addresses from processed logs (filtered by date)."""
     df = pd.read_csv(processed_logs_path)
     
@@ -224,7 +226,13 @@ if __name__ == "__main__":
     
     print("🚀 Linea Wallet Transaction Extraction")
     print("=" * 60)
-    print(f"📅 Date range: Last 6 months (blocks {LINEA_START_BLOCK:,} → {LINEA_END_BLOCK:,})")
+
+    # Fetch block numbers for the date range
+    print(f"📅 Date range: {EXTRACTION_START_DATE} → {EXTRACTION_END_DATE}")
+    print("   Looking up block numbers...")
+    start_block = get_linea_block_by_date(EXTRACTION_START_DATE, ETHERSCAN_API_KEY)
+    end_block = get_linea_block_by_date(EXTRACTION_END_DATE, ETHERSCAN_API_KEY)
+    print(f"   Blocks: {start_block:,} → {end_block:,}")
     
     # Load unique wallets from processed logs
     processed_logs = Path(PROJECT_ROOT) / PROCESSED_DATA_DIR / "processed_logs.csv"
@@ -241,8 +249,8 @@ if __name__ == "__main__":
     df = extract_all_wallet_transactions(
         wallets, 
         output_file,
-        start_block=LINEA_START_BLOCK,
-        end_block=LINEA_END_BLOCK
+        start_block=start_block,
+        end_block=end_block
     )
     
     if not df.empty:

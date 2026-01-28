@@ -20,11 +20,12 @@ from utils.config import (
     ETHEREUM_CHAIN_ID,
     LINEA_BRIDGE_CONTRACT,
     MESSAGE_SENT_TOPIC,
-    LINEA_BRIDGE_START_BLOCK,
-    LINEA_BRIDGE_END_BLOCK,
+    EXTRACTION_START_DATE,
+    EXTRACTION_END_DATE,
     BRIDGE_LOGS_FILE,
     REQUEST_DELAY
 )
+from utils.block_utils import get_eth_block_by_date
 
 
 # =============================================================================
@@ -176,12 +177,19 @@ if __name__ == "__main__":
     print("🚀 Linea Bridge Log Extraction")
     print("=" * 50)
     
+    # Fetch block numbers for the date range
+    print(f"📅 Date range: {EXTRACTION_START_DATE} → {EXTRACTION_END_DATE}")
+    print("   Looking up block numbers...")
+    start_block = get_eth_block_by_date(EXTRACTION_START_DATE, ETHERSCAN_API_KEY)
+    end_block = get_eth_block_by_date(EXTRACTION_END_DATE, ETHERSCAN_API_KEY)
+    print(f"   Blocks: {start_block:,} → {end_block:,}")
+    
     # Fetch all bridge logs
     logs = get_all_logs(
         address=LINEA_BRIDGE_CONTRACT,
         topic0=MESSAGE_SENT_TOPIC,
-        from_block=LINEA_BRIDGE_START_BLOCK,
-        to_block=LINEA_BRIDGE_END_BLOCK
+        from_block=start_block,
+        to_block=end_block
     )
     
     if logs:
