@@ -19,7 +19,7 @@ __pycache__/
 *.egg
 *.egg-info/
 dist/
-build/
+build/if data folder is untracked
 
 # Data files (too large for git)
 data/raw/*.csv

@@ -1,7 +1,7 @@
 """
 Load Transformed Data to PostgreSQL
 ====================================
-Loads transformed bridge logs and transactions CSV files into PostgreSQL raw schema.
+Loads transformed etherscan logs and transactions CSV files into PostgreSQL raw schema.
 This is the bronze layer - stores cleaned/transformed data before dbt modeling.
 """
 
@@ -12,13 +12,21 @@ from pathlib import Path
 import psycopg2
 from dotenv import load_dotenv
 import pandas as pd
-from utils.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+import sys
+
+# Add the project root to sys.path to allow imports from src
+current_dir = Path(__file__).resolve().parent
+project_root = current_dir.parent.parent
+sys.path.append(str(project_root))
+
+# We import config via the full package path `src.utils.config`
+from src.utils.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 
 # Load environment variables from .env so local runs work without exporting.
 load_dotenv()
 
 # Project root directory (3 levels up from this script)
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 def get_db_connection(
     host: Optional[str] = None,
@@ -47,9 +55,9 @@ def get_db_connection(
     return conn
 
 
-def create_bridge_logs_table(conn) -> None:
+def create_etherscan_logs_table(conn) -> None:
     """
-    Create the bridge_logs table in raw schema.
+    Create the etherscan_logs table in raw schema.
     
     This table stores transformed bridge deposit events from Ethereum Mainnet.
     Columns match the output from transform_logs.py.
@@ -57,7 +65,7 @@ def create_bridge_logs_table(conn) -> None:
     create_sql = """
     CREATE SCHEMA IF NOT EXISTS raw;
     
-    CREATE TABLE IF NOT EXISTS raw.bridge_logs (
+    CREATE TABLE IF NOT EXISTS raw.etherscan_logs (
         tx_hash VARCHAR(66) NOT NULL,
         block_number BIGINT NOT NULL,
         timestamp BIGINT NOT NULL,
@@ -77,15 +85,15 @@ def create_bridge_logs_table(conn) -> None:
     );
     
     -- Create indexes for common queries
-    CREATE INDEX IF NOT EXISTS idx_bridge_logs_from_address ON raw.bridge_logs(from_address);
-    CREATE INDEX IF NOT EXISTS idx_bridge_logs_datetime ON raw.bridge_logs(datetime);
-    CREATE INDEX IF NOT EXISTS idx_bridge_logs_block_number ON raw.bridge_logs(block_number);
+    CREATE INDEX IF NOT EXISTS idx_etherscan_logs_from_address ON raw.etherscan_logs(from_address);
+    CREATE INDEX IF NOT EXISTS idx_etherscan_logs_datetime ON raw.etherscan_logs(datetime);
+    CREATE INDEX IF NOT EXISTS idx_etherscan_logs_block_number ON raw.etherscan_logs(block_number);
     """
     
     with conn.cursor() as cur:
         cur.execute(create_sql)
     conn.commit()
-    print("✓ Table raw.bridge_logs created/verified")
+    print("✓ Table raw.etherscan_logs created/verified")
 
 
 def create_transactions_table(conn) -> None:
@@ -98,6 +106,7 @@ def create_transactions_table(conn) -> None:
     create_sql = """
     CREATE SCHEMA IF NOT EXISTS raw;
     
+    DROP TABLE IF EXISTS raw.linea_transactions;
     CREATE TABLE IF NOT EXISTS raw.linea_transactions (
         datetime TIMESTAMP WITH TIME ZONE NOT NULL,
         block_number BIGINT NOT NULL,
@@ -111,7 +120,7 @@ def create_transactions_table(conn) -> None:
         is_error BOOLEAN,
         tx_status BOOLEAN,
         method_id VARCHAR(10),
-        function_name VARCHAR(255),
+        function_name TEXT,
         loaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
     
@@ -142,9 +151,9 @@ def truncate_table(conn, table_name: str) -> None:
     print(f"✓ Truncated raw.{table_name}")
 
 
-def load_bridge_logs_csv(conn, csv_path: Path) -> int:
+def load_etherscan_logs_csv(conn, csv_path: Path) -> int:
     """
-    Load transformed bridge logs CSV file into PostgreSQL.
+    Load transformed etherscan logs CSV file into PostgreSQL.
     
     Uses COPY for fast bulk loading. Handles data type conversions and NULLs.
     
@@ -190,7 +199,7 @@ def load_bridge_logs_csv(conn, csv_path: Path) -> int:
     
     # Use COPY for fast bulk insert
     copy_sql = f"""
-        COPY raw.bridge_logs ({", ".join(available_cols)})
+        COPY raw.etherscan_logs ({", ".join(available_cols)})
         FROM STDIN WITH (FORMAT CSV, NULL '\\N')
     """
     
@@ -200,11 +209,11 @@ def load_bridge_logs_csv(conn, csv_path: Path) -> int:
         conn.commit()
         
         inserted = len(df_selected)
-        print(f"   ✓ Loaded {inserted:,} rows into raw.bridge_logs")
+        print(f"   ✓ Loaded {inserted:,} rows into raw.etherscan_logs")
         return inserted
     except Exception as e:
         conn.rollback()
-        print(f"   ❌ Error loading bridge logs: {e}")
+        print(f"   ❌ Error loading etherscan logs: {e}")
         raise
 
 
@@ -371,7 +380,7 @@ def load_all_transformed_data(
         # 1. CREATE TABLES
         # =====================================================================
         print("\n📋 Creating/verifying tables...")
-        create_bridge_logs_table(conn)
+        create_etherscan_logs_table(conn)
         create_transactions_table(conn)
         
         # =====================================================================
@@ -382,11 +391,11 @@ def load_all_transformed_data(
             print("-" * 60)
             
             if truncate_existing:
-                truncate_table(conn, "bridge_logs")
+                truncate_table(conn, "etherscan_logs")
             
             try:
-                rows = load_bridge_logs_csv(conn, bridge_logs_file)
-                results["bridge_logs"] = rows
+                rows = load_etherscan_logs_csv(conn, bridge_logs_file)
+                results["etherscan_logs"] = rows
             except Exception as e:
                 print(f"❌ Failed to load bridge logs: {e}")
                 conn.rollback()
@@ -420,11 +429,11 @@ def load_all_transformed_data(
         print("=" * 60)
         
         # Check final row counts
-        bridge_status = check_table_status(conn, "bridge_logs")
+        bridge_status = check_table_status(conn, "etherscan_logs")
         tx_status = check_table_status(conn, "linea_transactions")
         
         print(f"\n📈 Final Table Status:")
-        print(f"   raw.bridge_logs: {bridge_status['row_count']:,} rows")
+        print(f"   raw.etherscan_logs: {bridge_status['row_count']:,} rows")
         print(f"   raw.linea_transactions: {tx_status['row_count']:,} rows")
         
         return results
