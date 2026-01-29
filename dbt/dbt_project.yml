@@ -5,7 +5,7 @@ config-version: 2
 profile: 'linea_analytics'
 
 model-paths: ["models"]
-seeds-paths: ["seeds"]
+seed-paths: ["seeds"]
 test-paths: ["tests"]
 analysis-paths: ["analyses"]
 macro-paths: ["macros"]
