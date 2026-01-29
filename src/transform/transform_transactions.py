@@ -66,6 +66,13 @@ def transform_transactions(df):
     """Apply transformations to transaction DataFrame."""
     print(f"📊 Transforming {len(df):,} transactions...")
     
+    # 0. Deduplicate (Remove extraction artifacts)
+    # ---------------------------------------------------------
+    initial_count = len(df)
+    df = df.drop_duplicates(subset=['hash']).copy()
+    if len(df) < initial_count:
+        print(f"   • Removed {initial_count - len(df):,} duplicate transaction hashes")
+    
     # 1. The "Big Three" Conversions
     # ---------------------------------------------------------
     
@@ -153,7 +160,7 @@ if __name__ == "__main__":
         
         if len(df_raw) > 0:
             df_processed = transform_transactions(df_raw)
-            save_processed(df_processed, "processed_transactions.csv")
+            save_processed(df_processed, "transformed_transactions.csv")
             
             # Show sample
             print(f"\n📄 Sample processed row:")

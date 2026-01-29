@@ -97,7 +97,7 @@ if __name__ == "__main__":
     print(f"   Found {len(df_raw):,} raw rows")
     
     # Load processed logs
-    parsed_path = Path(PROJECT_ROOT) / f"{PROCESSED_DATA_DIR}/processed_logs.csv"
+    parsed_path = Path(PROJECT_ROOT) / f"{PROCESSED_DATA_DIR}/transformed_logs.csv"
     if not parsed_path.exists():
         print(f"❌ Processed file not found: {parsed_path}")
         exit(1)

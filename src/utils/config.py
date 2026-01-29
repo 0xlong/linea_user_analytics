@@ -70,7 +70,7 @@ WHALE_THRESHOLD_USD = 10000
 
 # Where raw data gets saved
 RAW_DATA_DIR = "data/raw"
-PROCESSED_DATA_DIR = "data/processed"
+PROCESSED_DATA_DIR = "data/transformed"
 
 # Output file names
 BRIDGE_LOGS_FILE = f"{RAW_DATA_DIR}/etherscan_logs.csv"
@@ -83,3 +83,14 @@ LINEA_TXS_FILE = f"{RAW_DATA_DIR}/linea_transactions.csv"
 # Etherscan rate limits
 REQUESTS_PER_SECOND = 4 # max 5 in API
 REQUEST_DELAY = 0.25  # seconds between requests
+
+# =============================================================================
+# DATABASE SETTINGS
+# =============================================================================
+
+# Postgres Database connection settings
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_NAME = "linea_analytics"
+DB_USER = "postgres"
+DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
