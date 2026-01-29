@@ -1,0 +1,21 @@
+name: 'linea_analytics'
+version: '1.0.0'
+config-version: 2
+
+profile: 'linea_analytics'
+
+model-paths: ["models"]
+seeds-paths: ["seeds"]
+test-paths: ["tests"]
+analysis-paths: ["analyses"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  linea_analytics:
+    materialized: view
