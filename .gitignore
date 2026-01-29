@@ -42,6 +42,7 @@ dbt_project/dbt_packages/
 .idea/
 *.swp
 *.swo
+.aiexclude
 
 # OS
 .DS_Store
