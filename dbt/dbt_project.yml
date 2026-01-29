@@ -18,4 +18,15 @@ clean-targets:
 
 models:
   linea_analytics:
-    materialized: view
+    # Everything in models/staging/ will go to schema 'staging'
+    staging:
+      +schema: staging
+      +materialized: view
+
+    intermediate:
+      +schema: intermediate
+      +materialized: ephemeral
+
+    marts:
+      +schema: marts
+      +materialized: table
