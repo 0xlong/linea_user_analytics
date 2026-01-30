@@ -40,6 +40,7 @@ dbt/profiles.yml
 dbt_project/target/
 dbt_project/logs/
 dbt_project/dbt_packages/
+.user.yml
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
