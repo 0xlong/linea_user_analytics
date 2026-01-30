@@ -1,6 +1,6 @@
-# MetaMask-to-Linea Growth & Retention Engine 🚀
+# Linea Users Behavior Analyticse 🚀
 
-Welcome to the **MetaMask-to-Linea Retention Engine**! This project is all about answering one big question: **"Are users who bridge to Linea sticking around, or are they just passing through?"**
+Welcome to the **Linea Users Behavior Analytics**! This project is all about answering one big question: **"Are users who bridge to Linea sticking around, or are they just passing through?"**
 
 We track users bridging from Ethereum Mainnet to Linea and analyze their ongoing activity to build cool cohort retention matrices. It's built for the MetaMask Product Team (and as a portfolio piece!) to spot trends, identify whales 🐋 vs. retail 🐟, and measure real engagement.
 
