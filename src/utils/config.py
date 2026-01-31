@@ -54,7 +54,7 @@ MESSAGE_SENT_TOPIC = "0xe856c2b8bd4eb0027ce32eeaf595c21b0b6b4644b326e5b7bd80a1cf
 # =============================================================================
 
 # Define your date range here - both scripts will use these
-EXTRACTION_START_DATE = "2025-07-31"
+EXTRACTION_START_DATE = "2025-01-27"
 EXTRACTION_END_DATE = "2026-01-27"
 
 # =============================================================================
@@ -82,7 +82,7 @@ LINEA_TXS_FILE = f"{RAW_DATA_DIR}/linea_transactions.csv"
 
 # Etherscan rate limits
 REQUESTS_PER_SECOND = 4 # max 5 in API
-REQUEST_DELAY = 0.25  # seconds between requests
+REQUEST_DELAY = 0.15  # seconds between requests
 
 # =============================================================================
 # DATABASE SETTINGS

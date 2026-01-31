@@ -39,26 +39,35 @@ session = requests.Session()
 # FUNCTIONS
 # =============================================================================
 
-def load_unique_wallets(processed_logs_path, start_date=EXTRACTION_START_DATE):
-    """Load unique wallet addresses from processed logs (filtered by date)."""
-    df = pd.read_csv(processed_logs_path)
+def load_unique_wallets(logs_path, start_date=EXTRACTION_START_DATE):
+    """Load unique wallet addresses from logs (filtered by date).
     
-    # Filter to last 6 months only
-    if "datetime" in df.columns:
+    Supports both raw logs (etherscan_logs.csv with timeStamp) 
+    and processed logs (transformed_logs.csv with datetime).
+    """
+    df = pd.read_csv(logs_path)
+    
+    # Filter by date - handle both raw (timeStamp) and processed (datetime) formats
+    if "timeStamp" in df.columns:
+        # Raw logs: convert Unix timestamp to datetime
+        df["datetime"] = pd.to_datetime(df["timeStamp"].astype(int), unit="s")
+        df = df[df["datetime"] >= start_date]
+        print(f"📅 Filtered to transactions from {start_date} onwards")
+        print(f"   Transactions in range: {len(df):,}")
+    elif "datetime" in df.columns:
         df["datetime"] = pd.to_datetime(df["datetime"])
         df = df[df["datetime"] >= start_date]
         print(f"📅 Filtered to transactions from {start_date} onwards")
         print(f"   Transactions in range: {len(df):,}")
     
-    # The column name from processing - adjust if different
-    if "from_address" in df.columns:
-        wallets = df["from_address"].unique()
-    elif "_from" in df.columns:
+    # The column name varies: _from (raw), from_address (processed), from
+    if "_from" in df.columns:
         wallets = df["_from"].unique()
+    elif "from_address" in df.columns:
+        wallets = df["from_address"].unique()
     elif "from" in df.columns:
         wallets = df["from"].unique()
     else:
-        # Try to find address column
         print(f"Available columns: {df.columns.tolist()}")
         raise ValueError("Could not find wallet address column")
     
@@ -234,8 +243,8 @@ if __name__ == "__main__":
     end_block = get_linea_block_by_date(EXTRACTION_END_DATE, ETHERSCAN_API_KEY)
     print(f"   Blocks: {start_block:,} → {end_block:,}")
     
-    # Load unique wallets from processed logs
-    processed_logs = Path(PROJECT_ROOT) / PROCESSED_DATA_DIR / "processed_logs.csv"
+    # Load unique wallets from processed logs (has decoded wallet addresses)
+    processed_logs = Path(PROJECT_ROOT) / PROCESSED_DATA_DIR / "transformed_logs.csv"
     
     if not processed_logs.exists():
         print(f"❌ Processed logs not found: {processed_logs}")

@@ -106,7 +106,7 @@ def create_transactions_table(conn) -> None:
     create_sql = """
     CREATE SCHEMA IF NOT EXISTS raw;
     
-    DROP TABLE IF EXISTS raw.linea_transactions;
+    DROP TABLE IF EXISTS raw.linea_transactions CASCADE;
     CREATE TABLE IF NOT EXISTS raw.linea_transactions (
         datetime TIMESTAMP WITH TIME ZONE NOT NULL,
         block_number BIGINT NOT NULL,

@@ -6,7 +6,7 @@ Convert dates to block numbers using Etherscan/Lineascan API.
 
 import requests
 from datetime import datetime, timezone
-from config import ETHEREUM_CHAIN_ID, LINEA_CHAIN_ID
+from .config import ETHEREUM_CHAIN_ID, LINEA_CHAIN_ID
 
 
 def get_block_by_date(date_str: str, chain_id: int, api_key: str, closest: str = "before") -> int:
