@@ -3,7 +3,7 @@ with source as (
 
 
     select * from {{ source('linea_analytics', 'etherscan_logs') }}
-    where datetime >= '2025-07-31' and datetime <= '2026-01-27' --temp fix until new data come
+    where datetime >= '2025-01-27' and datetime <= '2026-01-27' --temp fix until new data come
 
 ),
 

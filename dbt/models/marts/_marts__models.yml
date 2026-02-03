@@ -50,3 +50,21 @@ models:
       - name: retention_rate
         tests:
           - not_null
+
+  - name: mart_wallet_trading_sessions
+    description: "Wallet trading session analysis - classifies users by when they trade (Asian/European/American sessions)"
+    columns:
+      - name: user_address
+        description: "Primary key - wallet address"
+        tests:
+          - unique
+          - not_null
+      - name: dominant_session
+        description: "Trading session with most transactions"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['asian', 'european', 'american', 'peak_overlap', 'off_hours']
+      - name: total_tx_count
+        tests:
+          - not_null

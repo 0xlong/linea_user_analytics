@@ -51,7 +51,8 @@ with users as (
     select 
         user_address,
         cohort_month,
-        user_segment
+        user_segment,
+        user_tier
     from {{ ref('dim_users') }}
 
 ),
@@ -77,9 +78,10 @@ cohort_sizes as (
     select
         cohort_month,
         user_segment,
+        user_tier,
         count(distinct user_address) as cohort_size
     from users
-    group by cohort_month, user_segment
+    group by cohort_month, user_segment, user_tier
 
 ),
 
@@ -93,6 +95,7 @@ user_relative_activity as (
         u.user_address,
         u.cohort_month,
         u.user_segment,
+        u.user_tier,
         a.activity_month,
         
         -- Calculate how many months after bridging this activity occurred
@@ -122,12 +125,13 @@ retention_counts as (
     select
         cohort_month,
         user_segment,
+        user_tier,
         months_since_bridge,
         count(distinct user_address) as active_users
     from user_relative_activity
     where months_since_bridge >= 0
       and months_since_bridge <= 12  -- Limit to first 12 months for readability
-    group by cohort_month, user_segment, months_since_bridge
+    group by cohort_month, user_segment, user_tier, months_since_bridge
 
 ),
 
@@ -139,7 +143,8 @@ final as (
     select
         r.cohort_month,
         r.user_segment,
-        r.months_since_bridge, --
+        r.user_tier,
+        r.months_since_bridge,
         s.cohort_size,
         r.active_users,
         
@@ -164,10 +169,12 @@ final as (
     join cohort_sizes s
         on r.cohort_month = s.cohort_month
         and r.user_segment = s.user_segment
+        and r.user_tier = s.user_tier
     
     order by 
         r.cohort_month,
         r.user_segment,
+        r.user_tier,
         r.months_since_bridge
 
 )
