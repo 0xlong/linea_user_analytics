@@ -130,10 +130,10 @@ final as (
         -- Combines: bridge volume + tx activity + recency
         -- ─────────────────────────────────────────────────────
         case
-            when a.active_months >= 3 and s.user_segment = 'Whale' then 'High Value Retained'
-            when a.active_months >= 3 then 'Retained'
-            when a.active_months >= 1 then 'Engaged'
-            when a.active_months = 0 or a.active_months is null then 'Bridge Only'
+            when a.active_months >= 3 and s.user_segment = 'Whale' then 'High Value Retained (3+ months, Whale)'
+            when a.active_months >= 3 then 'Retained (3+ months)'
+            when a.active_months >= 1 then 'Engaged (1-2 months)'
+            when a.active_months = 0 or a.active_months is null then 'Bridge Only (0 months)'
             else 'Unknown'
         end as engagement_status
 
