@@ -32,6 +32,8 @@ WITH categorized AS (
                 OR LOWER(function_name) LIKE 'smartswap%'
                 OR LOWER(function_name) LIKE 'multicall(%'
                 OR LOWER(function_name) LIKE 'snwap%'
+                OR LOWER(function_name) LIKE 'approve(%'
+                OR LOWER(function_name) LIKE 'permit(%'
                 THEN 'Swapping'
 
             -- NFT: Minting, buying, selling NFTs
@@ -43,6 +45,7 @@ WITH categorized AS (
                 OR LOWER(function_name) LIKE 'mintwithvoucher%'
                 OR LOWER(function_name) LIKE 'mintwithsignature%'
                 OR LOWER(function_name) LIKE 'purchase(%'
+                OR LOWER(function_name) LIKE 'setapproval%'
                 THEN 'NFT'
 
             -- DeFi: Lending, liquidity, staking
@@ -61,6 +64,7 @@ WITH categorized AS (
                 OR LOWER(function_name) LIKE 'redeem%'
                 OR LOWER(function_name) LIKE 'createlock%'
                 OR LOWER(function_name) LIKE 'increaseliquidity%'
+                OR LOWER(function_name) LIKE 'approvedelegation%'
                 THEN 'DeFi'
 
             -- Identity & Governance: Attestations, voting, quests
@@ -73,15 +77,11 @@ WITH categorized AS (
                 OR LOWER(function_name) LIKE 'setscore%'
                 OR LOWER(function_name) LIKE 'onchaingm%'
                 OR LOWER(function_name) LIKE 'dailygm%'
-                THEN 'Identity_Governance'
+                THEN 'DAO_and_Campaigns'
 
-            -- Infrastructure: Token approvals, transfers
-            WHEN LOWER(function_name) LIKE 'approve(%'
-                OR LOWER(function_name) LIKE 'transfer(%'
-                OR LOWER(function_name) LIKE 'setapproval%'
-                OR LOWER(function_name) LIKE 'permit(%'
-                OR LOWER(function_name) LIKE 'approvedelegation%'
-                THEN 'Infrastructure'
+            -- Transfers: Direct token sends
+            WHEN LOWER(function_name) LIKE 'transfer(%'
+                THEN 'Transfers'
 
             -- Claim: Generic claims (could be rewards, airdrops, etc.)
             WHEN LOWER(function_name) LIKE 'claim(%'
