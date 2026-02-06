@@ -2,7 +2,8 @@
 
 > **Cohort retention and behavior analysis for users bridging from Ethereum Mainnet to Linea**  
 
----
+[screen-capture (1).webm](https://github.com/user-attachments/assets/6f3ae5ad-9324-4d2e-8c65-f75314b6bf81)
+
 
 ## Overview
 
